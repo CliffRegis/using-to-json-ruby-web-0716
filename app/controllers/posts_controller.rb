@@ -5,9 +5,6 @@ class PostsController < ApplicationController
     @posts = Post.all
   end
 
-  def show
-  end
-
   def new
     @post = Post.new
   end
@@ -16,6 +13,25 @@ class PostsController < ApplicationController
     @post = Post.create(post_params)
     @post.save
     redirect_to post_path(@post)
+  end
+  # def show
+  #   @author = @post.author
+  #     respond_to do |format|
+  #       format.html {render :show}
+  #       format.json {render json: post.to_json(only: [:title, :description, :id],
+  #         include: [author: {only:[:name]}])}
+  #     end
+  # end
+
+    def show
+    @post = Post.find(params[:id])
+    @author = Author.find(params[:id])
+    @author = @post.author
+    respond_to do |format|
+      format.html { render :show }
+      format.json { render json: @post.to_json(only: [:title, :description, :id],
+                              include: [author: { only: [:name]}]) }
+    end
   end
 
   def edit
@@ -26,10 +42,7 @@ class PostsController < ApplicationController
     redirect_to post_path(@post)
   end
 
-  def post_data
-    post = Post.find(params[:id])
-    render json: PostSerializer.serialize(post)
-  end
+  
 
 private
   # Use callbacks to share common setup or constraints between actions.
